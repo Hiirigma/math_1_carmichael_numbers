@@ -1,5 +1,7 @@
 import math
 import datetime
+import threading
+from mpmath.functions.functions import arg
 from sympy.ntheory import factorint
 
 def phi(n):
@@ -23,76 +25,150 @@ def is_prime(n):
 		 k += 2
 	return True
 
-def GenCarmichaelNumbers():
-	numPrime = 3
+# def GenCarmichaelNumbers():
+# 	numPrime = 3
+# # use KORSELT’S CRITERION
+# 	dBlock = 10**3
+
+# 	dIdx = 1
+# 	while (numPrime):
+# 		numPrime = 2 * dIdx + 1
+# 		start = datetime.datetime.now()
+# 		# Carmichael numbers if odd 
+# 		# if (numPrime % 2 == 0):
+# 		# 	dIdx+=1
+# 		# 	numPrime = 2 * dIdx + 1
+# 		# 	continue
+
+# 		if (math.isqrt(numPrime) == True):
+# 			dIdx += 1
+# 			continue
+
+# 		# https://arxiv.org/pdf/1305.1867.pdf
+# 		# Corollary 2.16
+# 		# if (is_prime(numPrime) == True):
+# 		# 	numPrime+=1
+# 		# 	continue
+
+# 		k = 1
+# 		dSum = 0
+# 		while k < numPrime:
+# 			if (math.gcd(k,numPrime) == 1):
+# 				dSum += pow(k, numPrime - 1, numPrime)
+# 			k += 1
+# 		# bIsCarm = True
+# 		# while k < numPrime:
+# 		# 	if (math.gcd(k, numPrime) == 1):
+# 		# 		if (pow(k,numPrime - 1, numPrime) != 1):
+# 		# 			bIsCarm = False
+# 		# 	k += 1
+
+# 		#if (bIsCarm == True):
+
+# 		# if (dSum == phi(numPrime)):
+# 		# 	lCarmichaelPrime = factorint(numPrime, multiple=True)
+# 		# 	dLen = len(lCarmichaelPrime) 
+# 		# 	if (dLen <= 8 and dLen > 1):
+# 		# 		if (len([*filter(lambda x: x >= dBlock, lCarmichaelPrime)]) == 0):
+# 		# 			end = datetime.datetime.now()
+# 		# 			print (f"Carmichael number is: {numPrime} = {lCarmichaelPrime}")
+# 		# 			print(f"Time: {(end - start).microseconds}")
+
+# 		# new 
+# 		if (dSum == phi(numPrime)):
+# 			lCarmichaelPrime = factorint(numPrime, multiple=True)
+# 			dLen = len(lCarmichaelPrime) 
+# 			if (dLen > 8 or dLen < 2):
+# 					dIdx += 1
+# 					continue
+
+# 			for prime in lCarmichaelPrime:
+# 				if (numPrime - 1) % (prime - 1) != 0:
+# 					dIdx += 1
+# 					continue
+
+# 			if (len([*filter(lambda x: x >= dBlock, lCarmichaelPrime)]) == 0):	
+# 					end = datetime.datetime.now()
+# 					print (f"Carmichael number is: {numPrime} = {lCarmichaelPrime}")
+# 					print(f"Time: {(end - start).microseconds}")
+
+# 		dIdx += 1
+
+# 	return True
+
+
+def GenCarmichaelNumbers(numPrime : int):
+	dIdx = numPrime
+	# print (f"Start new Thread with args:{numPrime} ")
+	numPrimeBlock = 10000 ** (numPrime + 1)
+	numPrime = 10000 ** numPrime
+
 # use KORSELT’S CRITERION
 	dBlock = 10**3
-
-	dIdx = 1
 	while (numPrime):
-		numPrime = 2 * dIdx + 1
+	# while (numPrime != numPrimeBlock):
+		# numPrime = 2 * dIdx + 1
 		start = datetime.datetime.now()
 		# Carmichael numbers if odd 
 		# if (numPrime % 2 == 0):
-		# 	dIdx+=1
-		# 	numPrime = 2 * dIdx + 1
+		# 	numPrime += 1
 		# 	continue
 
-		if (math.isqrt(numPrime) == True):
-			dIdx += 1
-			continue
+		# if (math.isqrt(numPrime) == True):
+		# 	numPrime += 1
+		# 	continue
 
 		# https://arxiv.org/pdf/1305.1867.pdf
 		# Corollary 2.16
-		# if (is_prime(numPrime) == True):
-		# 	numPrime+=1
-		# 	continue
+		if (is_prime(numPrime) == True):
+			numPrime+=1
+			continue
 
 		k = 1
 		dSum = 0
+		bIsCarm = True
+
 		while k < numPrime:
-			if (math.gcd(k,numPrime) == 1):
-				dSum += pow(k, numPrime - 1, numPrime)
+			if (math.gcd(k, numPrime) == 1):
+				dPow = pow(k, numPrime - 1, numPrime)
+				dSum += dPow
+				if (dPow != 1):
+					bIsCarm = False
+					break
 			k += 1
-		# bIsCarm = True
-		# while k < numPrime:
-		# 	if (math.gcd(k, numPrime) == 1):
-		# 		if (pow(k,numPrime - 1, numPrime) != 1):
-		# 			bIsCarm = False
-		# 	k += 1
 
-		#if (bIsCarm == True):
+		if (bIsCarm == True):
+			if (dSum == phi(numPrime)):
+				lCarmichaelPrime = factorint(numPrime, multiple=True)
+				if (len([*filter(lambda x: x >= dBlock, lCarmichaelPrime)]) == 0):
+					end = datetime.datetime.now()
+					print (f"Carmichael number is: {numPrime} = {lCarmichaelPrime}")
+					print(f"Time: {(end - start)}")
+				else:
+					print (f"Number:{numPrime}. With 1000 factor")
 
+		# # new 
 		# if (dSum == phi(numPrime)):
 		# 	lCarmichaelPrime = factorint(numPrime, multiple=True)
 		# 	dLen = len(lCarmichaelPrime) 
-		# 	if (dLen <= 8 and dLen > 1):
-		# 		if (len([*filter(lambda x: x >= dBlock, lCarmichaelPrime)]) == 0):
+		# 	if (dLen > 8 or dLen < 2):
+		# 			dIdx += 1
+		# 			continue
+
+		# 	for prime in lCarmichaelPrime:
+		# 		if (numPrime - 1) % (prime - 1) != 0:
+		# 			dIdx += 1
+		# 			continue
+
+		# 	if (len([*filter(lambda x: x >= dBlock, lCarmichaelPrime)]) == 0):	
 		# 			end = datetime.datetime.now()
 		# 			print (f"Carmichael number is: {numPrime} = {lCarmichaelPrime}")
 		# 			print(f"Time: {(end - start).microseconds}")
 
-		# new 
-		if (dSum == phi(numPrime)):
-			lCarmichaelPrime = factorint(numPrime, multiple=True)
-			dLen = len(lCarmichaelPrime) 
-			if (dLen > 8 or dLen < 2):
-					dIdx += 1
-					continue
-
-			for prime in lCarmichaelPrime:
-				if (numPrime - 1) % (prime - 1) != 0:
-					dIdx += 1
-					continue
-
-			if (len([*filter(lambda x: x >= dBlock, lCarmichaelPrime)]) == 0):	
-					end = datetime.datetime.now()
-					print (f"Carmichael number is: {numPrime} = {lCarmichaelPrime}")
-					print(f"Time: {(end - start).microseconds}")
-
-		dIdx += 1
+		numPrime += 1
 
 	return True
+
 
 # def GenCarmichaelNumbers():
 # 	numPrime = 3
@@ -113,9 +189,17 @@ def GenCarmichaelNumbers():
 
 
 def main():
-	print(f'Generate Carmichael numbers')	
-	GenCarmichaelNumbers()
+	print(f'Generate Carmichael numbers')
+	# threads = list()
+	# for dIdx in range(5):
+	# 	t1 = threading.Thread(target=GenCarmichaelNumbers, args=(dIdx,))
+	# 	threads.append(t1)
+	# 	t1.start()
 
+	# for t1 in threads:
+	# 	t1.join()
+
+	GenCarmichaelNumbers(0)
 	return 0
 
 
