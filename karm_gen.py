@@ -1,24 +1,15 @@
 import math
-import datetime
-import time
-import threading
 from mpmath.functions.functions import arg
 from sympy.ntheory import factorint
 
-def phi(n):
-	amount = 0        
-	for k in range(1, n + 1):
-		if math.gcd(n, k) == 1:
-			amount += 1
-	return amount
+G_D = 3
 
 def is_prime(n):
 	""""pre-condition: n is a nonnegative integer
 	post-condition: return True if n is prime and False otherwise."""
 	if n < 2: 
 		 return False;
-	if n % 2 == 0:             
-		 return n == 2  # return False
+
 	k = 3
 	while k*k <= n:
 		 if n % k == 0:
@@ -39,10 +30,6 @@ def GenCarmichaelNumbers(dPrimeCount : int):
 		if (sqr * sqr == numPrime):
 			numPrime += 2
 			continue
-
-		if (is_prime(numPrime) == True):
-			numPrime+=2
-			continue	
 
 		lCarmichaelPrime = factorint(numPrime)
 
@@ -111,18 +98,8 @@ def GenCarmichaelNumbers(dPrimeCount : int):
 # 	return True
 
 def main():
-	print(f'Generate Carmichael numbers')
-	threads = list()
-	# for dIdx in range(5):
-	# 	time.sleep(1)
-	# 	t1 = threading.Thread(target=GenCarmichaelNumbers, args=(dIdx,))
-	# 	threads.append(t1)
-	# 	t1.start()
-
-	# for t1 in threads:
-	# 	t1.join()
-
-	GenCarmichaelNumbers(3)
+	print('Generate Carmichael numbers')
+	GenCarmichaelNumbers(G_D)
 	return 0
 
 
